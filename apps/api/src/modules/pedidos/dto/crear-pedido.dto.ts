@@ -9,8 +9,8 @@ import {
 } from 'class-validator';
 
 export class CrearDetallePedidoDto {
-  @IsUUID('4')
-  productoId: string;
+ @IsUUID()
+productoId: string;
 
   @IsInt()
   @Min(1)

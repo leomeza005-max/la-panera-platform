@@ -34,13 +34,15 @@ export class DatabaseService
       password: this.getRequiredVariable('DB_PASSWORD'),
       database: this.getRequiredVariable('DB_NAME'),
 
-      waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0,
-      connectTimeout: 60000,
+    waitForConnections: true,
+connectionLimit: 5,
+maxIdle: 2,
+idleTimeout: 30000,
+queueLimit: 0,
+connectTimeout: 60000,
 
-      enableKeepAlive: true,
-      keepAliveInitialDelay: 0,
+enableKeepAlive: true,
+keepAliveInitialDelay: 10000,
 
       ssl: {
         rejectUnauthorized: false,
