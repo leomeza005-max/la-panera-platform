@@ -3,14 +3,19 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ClientesModule } from '../clientes/clientes.module';
+import { OperadoresModule } from '../operadores/operadores.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { OperadoresAuthController } from './operadores-auth.controller';
+import { OperadoresAuthService } from './operadores-auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { OperadorJwtStrategy } from './strategies/operador-jwt.strategy';
 
 @Module({
   imports: [
     ConfigModule,
     ClientesModule,
+    OperadoresModule,
 
     PassportModule.register({
       defaultStrategy: 'jwt',
@@ -47,10 +52,12 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       },
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, OperadoresAuthController],
   providers: [
     AuthService,
+    OperadoresAuthService,
     JwtStrategy,
+    OperadorJwtStrategy,
   ],
 })
 export class AuthModule {}
