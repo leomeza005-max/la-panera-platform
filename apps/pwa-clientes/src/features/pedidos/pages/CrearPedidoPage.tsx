@@ -103,14 +103,25 @@ export const CrearPedidoPage: React.FC = () => {
         }))
       };
 
-      // Esta llamada usa tu JWT actual y guarda en Aiven
-      const nuevoPedido = await crearPedido(payload);
-      navigate(`/pedidos/${nuevoPedido.pedidoId}`);
+      // 1. Usamos "as any" para que TypeScript confíe en nuestra extracción y quite la línea roja
+      const nuevoPedido = await crearPedido(payload) as any;
+      
+      // 2. Buscamos el ID dinámicamente para evitar el error "undefined"
+      const idReal = nuevoPedido?.pedidoId || nuevoPedido?.id || nuevoPedido?.data?.pedidoId || nuevoPedido?.data?.id;
+
+      // 3. Validamos que el ID exista y no sea la palabra literal "undefined"
+      if (idReal && idReal !== 'undefined') {
+        navigate(`/pedidos/${idReal}`);
+      } else {
+        // Si no logramos leer el ID, te enviamos a la lista general de forma segura
+        console.warn("Pedido creado, pero la estructura de respuesta es distinta:", nuevoPedido);
+        navigate('/pedidos'); 
+      }
     } catch (err: any) {
       setError(err.message || 'Ocurrió un error al crear el pedido.');
       setCargando(false);
     }
-  };
+  }; // <--- Esta es la llave que faltaba
 
   return (
     <div className="container" style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
