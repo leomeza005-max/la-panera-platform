@@ -8,6 +8,8 @@ import { PedidosModule } from './modules/pedidos/pedidos.module';
 import { SucursalesModule } from './modules/sucursales/sucursales.module';
 import { AdministracionModule } from './modules/administracion/administracion.module';
 import { ProductosModule } from './modules/productos/productos.module';
+import {CategoriasModule} from "./modules/categorias/categorias.module";
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -20,6 +22,7 @@ import { ProductosModule } from './modules/productos/productos.module';
     OperadoresModule,
     AdministracionModule,
     ProductosModule,
+    CategoriasModule,
   ],
   controllers: [AppController],
 })
