@@ -26,6 +26,16 @@ export function AppLayout() {
         </div>
 
         <nav className="sidebar-menu">
+
+          <NavLink
+  to="/productos"
+  className={({ isActive }) =>
+    isActive ? 'menu-enlace activo' : 'menu-enlace'
+  }
+>
+  <span className="menu-icono">01</span>
+  Productos
+</NavLink>
           <NavLink
             to="/pedidos"
             end
@@ -43,7 +53,7 @@ export function AppLayout() {
               isActive ? 'menu-enlace activo' : 'menu-enlace'
             }
           >
-            <span className="menu-icono">02</span>
+            <span className="menu-icono">03</span>
             Nuevo pedido
           </NavLink>
         </nav>

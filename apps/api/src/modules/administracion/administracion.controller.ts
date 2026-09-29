@@ -37,10 +37,20 @@ import type {
 import { DatabaseService } from '../../config/database.service';
 
 import { OperadorJwtAuthGuard } from '../auth/guards/operador-jwt-auth.guard';
-
 import { AdministracionGuard } from './administracion.guard';
 
+import { CategoriasService } from '../categorias/categorias.service';
+import { CrearCategoriaDto } from '../categorias/dto/crear-categoria.dto';
+import { ActualizarCategoriaDto } from '../categorias/dto/actualizar-categoria.dto';
+
+import { ProductosService } from '../productos/productos.service';
+import { CrearProductoDto } from '../productos/dto/crear-producto.dto';
+import { ActualizarProductoDto } from '../productos/dto/actualizar-producto.dto';
+
+// ==========================================
 // DATOS DE SUCURSALES
+// ==========================================
+
 class DatosSucursal {
   @IsString()
   @IsNotEmpty()
@@ -53,7 +63,10 @@ class DatosSucursal {
   direccion?: string;
 }
 
+// ==========================================
 // DATOS DE OPERADORES
+// ==========================================
+
 class DatosOperador {
   @IsString()
   @IsNotEmpty()
@@ -65,8 +78,8 @@ class DatosOperador {
   @MaxLength(100)
   apellido1!: string;
 
-  @IsOptional()
   @IsString()
+  @IsNotEmpty()
   @MaxLength(100)
   apellido2?: string;
 
@@ -99,19 +112,98 @@ interface ExisteRow extends RowDataPacket {
   existe: number;
 }
 
+// ==========================================
+// CONTROLADOR DE ADMINISTRACIÓN
+// ==========================================
+
 @Controller('administracion')
 @UseGuards(
   OperadorJwtAuthGuard,
   AdministracionGuard,
 )
 export class AdministracionController {
+
   constructor(
     private readonly database: DatabaseService,
+    private readonly categoriasService: CategoriasService,
+    private readonly productosService: ProductosService,
   ) {}
 
-  // ==================================
+  // ==========================================
+  // LISTAR TODOS LOS PRODUCTOS (ADMIN)
+  // ==========================================
+
+  @Get('productos')
+  async listarProductosAdmin() {
+    return this.productosService.listarTodas();
+  }
+
+  // ==========================================
+  // CREAR PRODUCTO (ADMIN)
+  // ==========================================
+
+  @Post('productos')
+  async crearProductoAdmin(
+    @Body() datos: CrearProductoDto,
+  ) {
+    return this.productosService.crear(datos);
+  }
+
+  // ==========================================
+  // ACTUALIZAR PRODUCTO (ADMIN)
+  // ==========================================
+
+  @Patch('productos/:productoId')
+  async actualizarProductoAdmin(
+    @Param('productoId') productoId: string,
+    @Body() datos: ActualizarProductoDto,
+  ) {
+    return this.productosService.actualizar(
+      productoId,
+      datos,
+    );
+  }
+
+  // ==========================================
+  // LISTAR TODAS LAS CATEGORÍAS (ADMIN)
+  // ==========================================
+
+  @Get('categorias')
+  async listarCategoriasAdmin() {
+    return this.categoriasService.listarTodas();
+  }
+
+  // ==========================================
+  // CREAR CATEGORÍA (ADMIN)
+  // ==========================================
+
+  @Post('categorias')
+  async crearCategoriaAdmin(
+    @Body() datos: CrearCategoriaDto,
+  ) {
+    return this.categoriasService.crear(datos);
+  }
+
+  // ==========================================
+  // ACTUALIZAR CATEGORÍA (ADMIN)
+  // ==========================================
+
+  @Patch('categorias/:categoriaId')
+  async actualizarCategoriaAdmin(
+    @Param('categoriaId', ParseIntPipe)
+    categoriaId: number,
+    @Body() datos: ActualizarCategoriaDto,
+  ) {
+    return this.categoriasService.actualizar(
+      categoriaId,
+      datos,
+    );
+  }
+
+  // ==========================================
   // LISTAR SUCURSALES
-  // ==================================
+  // ==========================================
+
   @Get('sucursales')
   async listarSucursales() {
     const [rows] = await this.database
@@ -128,9 +220,10 @@ export class AdministracionController {
     return rows;
   }
 
-  // ==================================
+  // ==========================================
   // CREAR SUCURSAL
-  // ==================================
+  // ==========================================
+
   @Post('sucursales')
   async crearSucursal(
     @Body() datos: DatosSucursal,
@@ -153,9 +246,10 @@ export class AdministracionController {
     };
   }
 
-  // ==================================
+  // ==========================================
   // EDITAR SUCURSAL
-  // ==================================
+  // ==========================================
+
   @Patch('sucursales/:id')
   async actualizarSucursal(
     @Param('id', ParseIntPipe) id: number,
@@ -184,9 +278,10 @@ export class AdministracionController {
     return { ok: true };
   }
 
-  // ==================================
+  // ==========================================
   // LISTAR OPERADORES
-  // ==================================
+  // ==========================================
+
   @Get('operadores')
   async listarOperadores() {
     const [rows] = await this.database
@@ -210,9 +305,10 @@ export class AdministracionController {
     return rows;
   }
 
-  // ==================================
+  // ==========================================
   // VALIDAR EXISTENCIA DE SUCURSAL
-  // ==================================
+  // ==========================================
+
   private async validarSucursal(
     sucursalId: number,
   ) {
@@ -233,9 +329,10 @@ export class AdministracionController {
     }
   }
 
-  // ==================================
+  // ==========================================
   // MANEJO DE CORREOS DUPLICADOS
-  // ==================================
+  // ==========================================
+
   private manejarDuplicado(
     error: unknown,
   ): never {
@@ -251,9 +348,10 @@ export class AdministracionController {
     throw error;
   }
 
-  // ==================================
+  // ==========================================
   // REGISTRAR OPERADOR
-  // ==================================
+  // ==========================================
+
   @Post('operadores')
   async crearOperador(
     @Body() datos: CrearOperador,
@@ -299,9 +397,10 @@ export class AdministracionController {
     return { operadorId };
   }
 
-  // ==================================
+  // ==========================================
   // ACTUALIZAR OPERADOR
-  // ==================================
+  // ==========================================
+
   @Patch('operadores/:id')
   async actualizarOperador(
     @Param('id') id: string,

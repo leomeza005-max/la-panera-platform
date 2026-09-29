@@ -15,3 +15,4 @@ export interface LoginResponse {
   accessToken: string;
   cliente: ClienteAutenticado;
 }
+

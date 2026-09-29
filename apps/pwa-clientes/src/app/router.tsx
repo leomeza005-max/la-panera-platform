@@ -1,16 +1,31 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
-import { haySesion } from '../features/auth/auth.storage';
+import {
+  haySesion,
+  obtenerTipoUsuario,
+} from '../features/auth/auth.storage';
 import { LoginPage } from '../features/auth/pages/LoginPage';
+import { PanelOperadorPage } from '../features/operadores/pages/PanelOperadorPage';
 import { CrearPedidoPage } from '../features/pedidos/pages/CrearPedidoPage';
 import { DetallePedidoPage } from '../features/pedidos/pages/DetallePedidoPage';
 import { MisPedidosPage } from '../features/pedidos/pages/MisPedidosPage';
 import { AppLayout } from './AppLayout';
 import { ProtectedRoute } from './ProtectedRoute';
+import { CatalogoPage } from '../features/catalogo/pages/CatalogoPage';
 
 function RutaInicial() {
+  const tipoUsuario = obtenerTipoUsuario();
+
+  if (!haySesion() || !tipoUsuario) {
+    return <Navigate to="/login" replace />;
+  }
+
   return (
     <Navigate
-      to={haySesion() ? '/pedidos' : '/login'}
+      to={
+        tipoUsuario === 'CLIENTE'
+          ? '/pedidos'
+          : '/operador'
+      }
       replace
     />
   );
@@ -25,28 +40,58 @@ export const router = createBrowserRouter([
     path: '/login',
     element: <LoginPage />,
   },
+
+{
+  path: '/productos',
+  element: <CatalogoPage />,
+},
+
+  // Rutas exclusivas de clientes
   {
-    element: <ProtectedRoute />,
+    element: (
+      <ProtectedRoute rolesPermitidos={['CLIENTE']} />
+    ),
+    children: [
+      
+      {
+  element: <AppLayout />,
+  children: [
+    {
+      path: '/productos',
+      element: <CatalogoPage />,
+    },
+    {
+      path: '/pedidos',
+      element: <MisPedidosPage />,
+    },
+    {
+      path: '/pedidos/nuevo',
+      element: <CrearPedidoPage />,
+    },
+    {
+      path: '/pedidos/:pedidoId',
+      element: <DetallePedidoPage />,
+    },
+  ],
+},
+    ],
+  },
+
+  // Rutas exclusivas de cajeros y administradores
+  {
+    element: (
+      <ProtectedRoute
+        rolesPermitidos={['CAJERO', 'ADMIN']}
+      />
+    ),
     children: [
       {
-        element: <AppLayout />,
-        children: [
-          {
-            path: '/pedidos',
-            element: <MisPedidosPage />,
-          },
-          {
-            path: '/pedidos/nuevo',
-            element: <CrearPedidoPage />,
-          },
-          {
-            path: '/pedidos/:pedidoId',
-            element: <DetallePedidoPage />,
-          },
-        ],
+        path: '/operador',
+        element: <PanelOperadorPage />,
       },
     ],
   },
+
   {
     path: '*',
     element: <Navigate to="/" replace />,

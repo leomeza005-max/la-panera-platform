@@ -7,18 +7,13 @@ import {
 import type { OperadorAutenticado } from '../../auth/types/auth.types';
 import { obtenerPerfilOperador } from '../services/operadores.service';
 import { AdministracionPage } from '../../administracion/pages/AdministracionPage';
-
-import { CatalogoAdminPage } from '../../administracion/pages/CatalogoAdminPage';
+import { PedidosOperadorPage } from './PedidosOperadorPage';
 
 export function PanelOperadorPage() {
   const navigate = useNavigate();
 
 const [seccion, setSeccion] = useState<
-  | 'inicio'
-  | 'sucursales'
-  | 'operadores'
-  | 'productos'
-  | 'categorias'
+  'inicio' | 'pedidos' | 'sucursales' | 'operadores'
 >('inicio');
 
   const [operador, setOperador] =
@@ -66,40 +61,6 @@ const [seccion, setSeccion] = useState<
         </div>
 
         <nav className="operadores-menu">
-
-          {/* ==================================
-    PRODUCTOS (ADMIN)
-    ================================== */}
-
-<button
-  className={
-    seccion === 'productos'
-      ? 'activo'
-      : undefined
-  }
-  type="button"
-  onClick={() => setSeccion('productos')}
->
-  <span>05</span>
-  Productos
-</button>
-
-{/* ==================================
-    CATEGORÍAS (ADMIN)
-    ================================== */}
-
-<button
-  className={
-    seccion === 'categorias'
-      ? 'activo'
-      : undefined
-  }
-  type="button"
-  onClick={() => setSeccion('categorias')}
->
-  <span>06</span>
-  Categorías
-</button>
           <button
   className={
     seccion === 'inicio'
@@ -113,10 +74,18 @@ const [seccion, setSeccion] = useState<
             Inicio
           </button>
 
-          <button type="button" disabled>
-            <span>02</span>
-            Pedidos
-          </button>
+         <button
+  type="button"
+  className={
+    seccion === 'pedidos'
+      ? 'activo'
+      : undefined
+  }
+  onClick={() => setSeccion('pedidos')}
+>
+  <span>02</span>
+  Pedidos
+</button>
 
           
 {operador?.rol === 'ADMIN' && (
@@ -185,68 +154,51 @@ const [seccion, setSeccion] = useState<
           </div>
         </header>
 
-  
-{/* ==================================
-    ADMINISTRACIÓN GENERAL
-    ================================== */}
-
-{operador?.rol === 'ADMIN' &&
-  (seccion === 'sucursales' ||
-    seccion === 'operadores') && (
-    <AdministracionPage tipo={seccion} />
-  )}
-
-{/* ==================================
-    ADMINISTRACIÓN DEL CATÁLOGO
-    ================================== */}
-
-{operador?.rol === 'ADMIN' &&
-  (seccion === 'productos' ||
-    seccion === 'categorias') && (
-    <CatalogoAdminPage tipo={seccion} />
-  )}
-
-       {seccion === 'inicio' && (
+{seccion === 'inicio' ? (
   <section className="operadores-dashboard">
     <p className="marca">Panel principal</p>
-          <h1>
-            Bienvenido, {operador?.nombre || 'operador'}
-          </h1>
 
-          <p>
-            Consulta la información correspondiente a tu
-            sucursal.
-          </p>
+    <h1>
+      Bienvenido, {operador?.nombre || 'operador'}
+    </h1>
 
-          {cargando && <p>Cargando información…</p>}
+    <p>
+      Consulta la información correspondiente a tu sucursal.
+    </p>
 
-          {error && (
-            <p className="mensaje-error">{error}</p>
-          )}
+    {cargando && <p>Cargando información…</p>}
 
-          {!cargando && !error && operador && (
-            <div className="operadores-tarjetas">
-              <article className="operador-tarjeta rosa">
-                <span>Sucursal asignada</span>
-                <strong>{operador.sucursalId}</strong>
-                <small>Sucursal de trabajo</small>
-              </article>
+    {error && (
+      <p className="mensaje-error">{error}</p>
+    )}
 
-              <article className="operador-tarjeta beige">
-                <span>Rol</span>
-                <strong>{operador.rol}</strong>
-                <small>Nivel de permisos</small>
-              </article>
+    {!cargando && !error && operador && (
+      <div className="operadores-tarjetas">
+        <article className="operador-tarjeta rosa">
+          <span>Sucursal asignada</span>
+          <strong>{operador.sucursalId}</strong>
+          <small>Sucursal de trabajo</small>
+        </article>
 
-              <article className="operador-tarjeta cafe">
-                <span>Estado</span>
-                <strong>Activo</strong>
-                <small>JWT verificado</small>
-              </article>
-            </div>
-          )}
-      </section>
-)}    
+        <article className="operador-tarjeta beige">
+          <span>Rol</span>
+          <strong>{operador.rol}</strong>
+          <small>Nivel de permisos</small>
+        </article>
+
+        <article className="operador-tarjeta cafe">
+          <span>Estado</span>
+          <strong>Activo</strong>
+          <small>JWT verificado</small>
+        </article>
+      </div>
+    )}
+  </section>
+) : seccion === 'pedidos' ? (
+  <PedidosOperadorPage />
+) : operador?.rol === 'ADMIN' ? (
+  <AdministracionPage tipo={seccion} />
+) : null}
       </main>
     </div>
   );
