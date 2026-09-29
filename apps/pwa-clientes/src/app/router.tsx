@@ -40,43 +40,35 @@ export const router = createBrowserRouter([
     path: '/login',
     element: <LoginPage />,
   },
-
-{
-  path: '/productos',
-  element: <CatalogoPage />,
-},
-
   // Rutas exclusivas de clientes
   {
     element: (
       <ProtectedRoute rolesPermitidos={['CLIENTE']} />
     ),
     children: [
-      
       {
-  element: <AppLayout />,
-  children: [
-    {
-      path: '/productos',
-      element: <CatalogoPage />,
-    },
-    {
-      path: '/pedidos',
-      element: <MisPedidosPage />,
-    },
-    {
-      path: '/pedidos/nuevo',
-      element: <CrearPedidoPage />,
-    },
-    {
-      path: '/pedidos/:pedidoId',
-      element: <DetallePedidoPage />,
-    },
-  ],
-},
+        element: <AppLayout />,
+        children: [
+          {
+            path: '/productos',
+            element: <CatalogoPage />,
+          },
+          {
+            path: '/pedidos',
+            element: <MisPedidosPage />,
+          },
+          {
+            path: '/pedidos/nuevo',
+            element: <CrearPedidoPage />, // ¡Tu pantalla ya está perfectamente enlazada aquí!
+          },
+          {
+            path: '/pedidos/:pedidoId',
+            element: <DetallePedidoPage />,
+          },
+        ],
+      },
     ],
   },
-
   // Rutas exclusivas de cajeros y administradores
   {
     element: (
@@ -91,7 +83,6 @@ export const router = createBrowserRouter([
       },
     ],
   },
-
   {
     path: '*',
     element: <Navigate to="/" replace />,
